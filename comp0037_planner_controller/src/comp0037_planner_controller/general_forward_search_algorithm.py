@@ -88,7 +88,6 @@ class GeneralForwardSearchAlgorithm(PlannerBase):
     # set of coordinates. These are then converted into start and destination
     # cells in the search grid and the search algorithm is then run.
     def search(self, startCoords, goalCoords):
-
         # Make sure the queue is empty. We do this so that we can keep calling
         # the same method multiple times and have it work.
         while (self.isQueueEmpty() == False):
@@ -131,8 +130,12 @@ class GeneralForwardSearchAlgorithm(PlannerBase):
         # Iterate until we have run out of live cells to try or we reached the goal.
         # This is the main computational loop and is the implementation of
         # LaValle's pseudocode
+        queue_len = 0
         while (self.isQueueEmpty() == False):
-
+            current_len = self.getQueueLength()
+            if current_len > queue_len:
+               # print "changed queue length, new length = " + str(current_len)
+                queue_len = current_len
             # Check if ROS is shutting down; if so, abort. This stops the
             # planner from hanging.
             if rospy.is_shutdown():
@@ -162,7 +165,7 @@ class GeneralForwardSearchAlgorithm(PlannerBase):
         self.drawCurrentState()
         
         print "numberOfCellsVisited = " + str(self.numberOfCellsVisited)
-        
+        print "max length of the queue = " + str(queue_len)
         if self.goalReached:
             print "Goal reached"
         else:
@@ -194,7 +197,11 @@ class GeneralForwardSearchAlgorithm(PlannerBase):
         # Iterate back through and extract each parent in turn and add
         # it to the path. To work out the travel length along the
         # path, you'll also have to add self at self stage.
+
+        angle = 0
+
         while (cell is not None):
+
             path.waypoints.appendleft(cell)
             path.travelCost = path.travelCost + self.computeLStageAdditiveCost(cell.parent, cell)
             cell = cell.parent
