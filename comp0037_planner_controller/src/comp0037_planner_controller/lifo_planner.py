@@ -26,3 +26,6 @@ class LIFOPlanner(CellBasedForwardSearch):
     def resolveDuplicate(self, cell, parentCell):
         # Nothing to do in self case
         pass
+
+    def getQueueLength(self):
+        return len(self.lifoQueue)
